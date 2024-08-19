@@ -1,4 +1,3 @@
-from random import randint
 from itertools import combinations
 from random import randint, choice
 from itertools import combinations
@@ -101,7 +100,7 @@ class SudokuGreed:
                 if not (v[0], v[1]) in aristas:
                     self.graph.add_edge(v[0], v[1])
 
-    def _compute__greed_solucion(self):
+    def _compute_greed_solucion(self):
         while True:
             s = self.graph.greedy_coloring()
             if not -1 in s:
@@ -111,14 +110,14 @@ class SudokuGreed:
         self._greed_solucion = [resultado[9*i:9*i+9] for i in range(9)]
         return self._greed_solucion
 
-    def _compute__greed_sin_resolver(self):
+    def _compute_greed_sin_resolver(self):
         if self._greed_solucion is None:
-            self._compute__greed_solucion()
+            self._compute_greed_solucion()
 
         resultado = [num for fila in self._greed_solucion for num in fila]
         
-        missing_digits_pos = set()
         while True:
+            missing_digits_pos = set()
             while True:
                 n = randint(0, 39)
                 missing_digits_pos.add(n)
@@ -143,13 +142,13 @@ class SudokuGreed:
     @property
     def greed_solucion(self):
         if self._greed_solucion is None:
-            self._compute__greed_solucion()
+            self._compute_greed_solucion()
         return self._greed_solucion
     
     @property
     def greed_sin_resolver(self):
         if self._greed_sin_resolver is None:
-            self._compute__greed_sin_resolver()
+            self._compute_greed_sin_resolver()
         return self._greed_sin_resolver
     
 if __name__ == '__main__':
