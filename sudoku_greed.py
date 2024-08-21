@@ -121,7 +121,7 @@ class SudokuGreed:
             while True:
                 n = randint(0, 39)
                 missing_digits_pos.add(n)
-                if len(missing_digits_pos) > 26:
+                if len(missing_digits_pos) > 22:
                     break
 
             x = list(missing_digits_pos)
