@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from sudoku_greed import SudokuGreed
+from .sudoku_greed import SudokuGreed
 
 app = FastAPI()
 
