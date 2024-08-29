@@ -1,6 +1,7 @@
 from itertools import combinations
 from random import randint, choice
 from math import sqrt
+from copy import deepcopy
 
 def duplicados_en_conjuntos(lst):
     vistos = set()
@@ -131,7 +132,6 @@ class SudokuGrid:
             self._compute_grid_solucion()
 
         resultado = [num for fila in self._grid_solucion for num in fila]
-        
         while True:
             missing_digits_pos = set()
             while True:
@@ -155,52 +155,8 @@ class SudokuGrid:
         self._grid_sin_resolver = [resultado[9*i:9*i+9] for i in range(9)]
         return self._grid_sin_resolver
     
-    def _obtener_adyacencias(self,grid):
-    
-        adyacencias = []
-        for fila in grid:
-
-            adyacentes = list(combinations(fila, 2))
-
-            #Las combinaciones posible de una fila son convertidas en 'set' para poder compararlos con otras 
-            #combinaciones sin importar el orden. Por ejemplo {1,2} == {2,1}        
-            adyacencias.append(
-                list(
-                    map(set, adyacentes)
-                )                    
-            )
-        return adyacencias
-
-    def _encontrar_valores_claves(self,grid):
-
-        '''    
-        Busca valores que deben estar presentes como pistas para que no 
-        existan 'bloques ilegales' (Una casilla con dos soluciones válidas).
-
-        '''        
-        adyacencias = self._obtener_adyacencias(grid)
-        agrupaciones_por_indice = list(zip(*adyacencias)) 
-        valor_posicion = []
-            
-        for grupo in agrupaciones_por_indice:          
-    
-            print(grupo)
-            conjuntos_identicos = duplicados_en_conjuntos(grupo)
-            print(type(conjuntos_identicos))
-
-            if conjuntos_identicos:
-                #Informa en qué fila aparece por primera ver el valor que debe estar 
-                # presente para evitar un bloque ilegal.
-                for conjuntos in conjuntos_identicos:
-                
-                    fila_a_modif = (list(grupo).index(conjuntos))
-                    print(fila_a_modif, conjuntos)
-                    pista_obligatoria = conjuntos.pop()
-                
-                    valor_posicion.append((fila_a_modif, pista_obligatoria))                                                    
-            # except ValueError as e:
-            #     pass   
-        return valor_posicion 
+    def _tiene_solucion_unica(self,grid):
+        ...
     @property
     def grid_solucion(self):
         if self._grid_solucion is None:
@@ -210,15 +166,67 @@ class SudokuGrid:
     @property
     def grid_sin_resolver(self):
         if self._grid_sin_resolver is None:
+            print('es none')
             self._compute_grid_sin_resolver()
-            valores_claves = self._encontrar_valores_claves(self.grid_solucion)
-
-            for pos, valor in valores_claves:
-                indice = self.grid_solucion[pos].index(valor)
-                self._grid_sin_resolver[pos][indice] = valor
+        print('no se none')
         return self._grid_sin_resolver
     
+class SudokuValid():
+
+    N = 9
+    def sudoku(self):
+        sudoku = SudokuGrid()
+        valores = sudoku.grid_sin_resolver
+        grid = deepcopy(valores)
+        solucion = sudoku.grid_solucion
+
+        if (self.solveSudoku(grid, 0, 0)):
+            
+            if grid == solucion:
+                return grid, valores
+            else: 
+                return self.sudoku()
+
+    def isSafe(self, grid, row, col, num):
+    
+        for x in range(9):
+            if grid[row][x] == num:
+                return False
+
+        for x in range(9):
+            if grid[x][col] == num:
+                return False
+
+        startRow = row - row % 3
+        startCol = col - col % 3
+        for i in range(3):
+            for j in range(3):
+                if grid[i + startRow][j + startCol] == num:
+                    return False
+        return True
+
+    def solveSudoku(self,grid, row, col):
+    
+        if (row == self.N - 1 and col == self.N):
+            return True
+        
+        if col == self.N:
+            row += 1
+            col = 0
+
+        if grid[row][col] > 0:
+            return self.solveSudoku(grid, row, col + 1)
+        for num in range(1, self.N + 1, 1):
+        
+            if self.isSafe(grid, row, col, num):
+            
+                grid[row][col] = num
+
+                if self.solveSudoku(grid, row, col + 1):
+                    return True
+            grid[row][col] = 0
+        return False
+         
 if __name__ == '__main__':
-    sudoku_grid = SudokuGrid()
-    print(sudoku_grid.grid_sin_resolver)
-    print(sudoku_grid.grid_solucion)
+    sudoku = SudokuValid()
+    print(sudoku.sudoku())
