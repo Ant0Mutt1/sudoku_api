@@ -1,14 +1,15 @@
 from fastapi import FastAPI
-from .sudoku_grid import SudokuGreed
+from .sudoku_grid import SudokuValid
 
 app = FastAPI()
 
 @app.get("/sudoku")
 def index():
-    sudoku_greed = SudokuGreed()
-    greed_solucion = sudoku_greed.greed_solucion
-    greed_sudoku = sudoku_greed.greed_sin_resolver
+    sudoku= SudokuValid()
+    sudoku_grid = sudoku.sudoku()
+    grid_solucion = sudoku_grid[0]
+    grid_sudoku = sudoku_grid[1]
     return {
-        "greed_sudoku":greed_sudoku,
-        "greed_solucion": greed_solucion
+        "valores":grid_sudoku,
+        "solucion": grid_solucion
     }
