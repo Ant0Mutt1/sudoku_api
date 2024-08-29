@@ -155,8 +155,8 @@ class SudokuGrid:
         self._grid_sin_resolver = [resultado[9*i:9*i+9] for i in range(9)]
         return self._grid_sin_resolver
     
-    def _tiene_solucion_unica(self,grid):
-        ...
+    # def _tiene_solucion_unica(self,grid):
+    #     ...
     @property
     def grid_solucion(self):
         if self._grid_solucion is None:
@@ -166,26 +166,27 @@ class SudokuGrid:
     @property
     def grid_sin_resolver(self):
         if self._grid_sin_resolver is None:
-            print('es none')
             self._compute_grid_sin_resolver()
-        print('no se none')
         return self._grid_sin_resolver
     
 class SudokuValid():
 
     N = 9
+    def __init__(self):
+        self.solutions = []
     def sudoku(self):
         sudoku = SudokuGrid()
         valores = sudoku.grid_sin_resolver
         grid = deepcopy(valores)
+        self.solutions = []
         solucion = sudoku.grid_solucion
+        self.solveSudoku(grid, 0, 0)
+        print(len(self.solutions))
+        if len(self.solutions) == 1:
+            return valores, solucion
+        else:
+            return self.sudoku()
 
-        if (self.solveSudoku(grid, 0, 0)):
-            
-            if grid == solucion:
-                return grid, valores
-            else: 
-                return self.sudoku()
 
     def isSafe(self, grid, row, col, num):
     
@@ -207,25 +208,22 @@ class SudokuValid():
 
     def solveSudoku(self,grid, row, col):
     
-        if (row == self.N - 1 and col == self.N):
-            return True
+        if row == self.N - 1 and col == self.N:
+            self.solutions.append(deepcopy(grid))
+            return
         
         if col == self.N:
             row += 1
             col = 0
 
         if grid[row][col] > 0:
-            return self.solveSudoku(grid, row, col + 1)
-        for num in range(1, self.N + 1, 1):
-        
-            if self.isSafe(grid, row, col, num):
-            
-                grid[row][col] = num
-
-                if self.solveSudoku(grid, row, col + 1):
-                    return True
-            grid[row][col] = 0
-        return False
+            self.solveSudoku(grid, row, col + 1)
+        else:
+            for num in range(1, self.N + 1):
+                if self.isSafe(grid, row, col, num):
+                    grid[row][col] = num
+                    self.solveSudoku(grid, row, col + 1)
+                    grid[row][col] = 0
          
 if __name__ == '__main__':
     sudoku = SudokuValid()
