@@ -132,6 +132,7 @@ class SudokuGrid:
             self._compute_grid_solucion()
 
         resultado = [num for fila in self._grid_solucion for num in fila]
+        digitos_requeridos = set(range(1, 10))
         while True:
             missing_digits_pos = set()
             while True:
@@ -147,16 +148,14 @@ class SudokuGrid:
             for i in missing_digits_pos:
                 resultado[i] = -1
 
-            if (1 in resultado and 2 in resultado and 3 in resultado and
-                4 in resultado and 5 in resultado and 6 in resultado and
-                7 in resultado and 8 in resultado and 9 in resultado):
+            resultado_set = set(resultado) - {-1}
+            if digitos_requeridos.issubset(resultado_set):
                 break
 
         self._grid_sin_resolver = [resultado[9*i:9*i+9] for i in range(9)]
         return self._grid_sin_resolver
     
-    # def _tiene_solucion_unica(self,grid):
-    #     ...
+
     @property
     def grid_solucion(self):
         if self._grid_solucion is None:
