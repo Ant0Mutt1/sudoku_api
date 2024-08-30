@@ -3,7 +3,7 @@ from .sudoku_grid import SudokuValid
 
 app = FastAPI()
 
-@app.get("/sudoku")
+@app.get("/")
 def index():
     sudoku= SudokuValid()
     sudoku_grid = sudoku.sudoku()
