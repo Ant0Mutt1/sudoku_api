@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query, HTTPException
 from .sudoku_grid import SudokuValid
 
 app = FastAPI()
@@ -13,3 +13,32 @@ def index():
         "valores":grid_sudoku,
         "solucion": grid_solucion
     }
+
+data = {
+    "es": {
+        "name": "Sudoku",
+        "description": "El sudoku es un rompecabezas de lógica que se juega en una cuadrícula de 9x9 celdas, dividida en nueve cuadrículas más pequeñas de 3x3. El objetivo es llenar la cuadrícula con números del 1 al 9 de manera que:",
+        "rules": [
+            "Cada fila contenga todos los números del 1 al 9 sin repetir ninguno.",
+            "Cada columna contenga todos los números del 1 al 9 sin repetir ninguno.",
+            "Cada cuadrícula de 3x3 contenga todos los números del 1 al 9 sin repetir ninguno."
+        ],
+        "starting_conditions": "El juego comienza con algunos números ya colocados, y debes usar la lógica para llenar las celdas vacías sin romper las reglas.",
+    },
+    'en': {
+        "name": "Sudoku",
+        "description": "Sudoku is a logic puzzle played on a 9x9 grid, which is divided into nine smaller 3x3 grids. The objective is to fill the grid with numbers from 1 to 9 so that:",
+        "rules": [
+            "Each row contains all the numbers from 1 to 9 without repeating any.",
+            "Each column contains all the numbers from 1 to 9 without repeating any.",
+            "Each 3x3 grid contains all the numbers from 1 to 9 without repeating any."
+        ],
+        "starting_conditions": "The game starts with some numbers already placed, and you need to use logic to fill in the empty cells without breaking the rules.",
+    }
+}
+@app.get('/rules')
+def info(lang :str = Query("es", alias="lang")):
+    print(f"Requested language: {lang}") 
+    if lang not in data:
+        raise HTTPException(status_code=404, detail="Language not supported")
+    return data[lang]        
