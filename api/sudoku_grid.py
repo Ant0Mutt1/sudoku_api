@@ -1,7 +1,8 @@
 from itertools import combinations
-from random import randint, choice
+from random import randint, choice, shuffle
 from math import sqrt
 from copy import deepcopy
+
 
 def duplicados_en_conjuntos(lst):
     vistos = set()
@@ -133,27 +134,31 @@ class SudokuGrid:
 
         resultado = [num for fila in self._grid_solucion for num in fila]
         digitos_requeridos = set(range(1, 10))
-        while True:
-            missing_digits_pos = set()
-            while True:
-                n = randint(0, 39)
-                missing_digits_pos.add(n)
-                if len(missing_digits_pos) > 22:
-                    break
 
-            x = list(missing_digits_pos)
-            y = list(map(lambda i: 80-i, x))
-            missing_digits_pos = x + y
+        # Generar una lista de posiciones y mezclarla
+        posiciones = list(range(81))
+        shuffle(posiciones)
 
-            for i in missing_digits_pos:
-                resultado[i] = -1
+        # Seleccionar las primeras 23 posiciones para vaciar
+        celdas_vacias = set(posiciones[:23])
 
-            resultado_set = set(resultado) - {-1}
-            if digitos_requeridos.issubset(resultado_set):
-                break
+        # Genera posiciones simétricas
+        x = list(celdas_vacias)
+        y = [80 - i for i in x]
+        celdas_vacias = set(x + y)
 
-        self._grid_sin_resolver = [resultado[9*i:9*i+9] for i in range(9)]
-        return self._grid_sin_resolver
+        # Filtra las posiciones para asegurarse de que todas estén dentro del rango válido (0 a 80), 
+        # eliminando cualquier posición fuera de estos límites
+        celdas_vacias = {pos for pos in celdas_vacias if pos < 81}
+
+        # Reemplaza los valores en resultado
+        resultado = [num if i not in celdas_vacias else -1 for i, num in enumerate(resultado)]
+
+        resultado_set = set(resultado) - {-1}
+        if digitos_requeridos.issubset(resultado_set):
+
+            self._grid_sin_resolver = [resultado[9*i:9*i+9] for i in range(9)]  
+            return self._grid_sin_resolver
     
 
     @property
