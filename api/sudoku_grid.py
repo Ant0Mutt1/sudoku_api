@@ -133,33 +133,25 @@ class SudokuGrid:
             self._compute_grid_solucion()
 
         resultado = [num for fila in self._grid_solucion for num in fila]
-        digitos_requeridos = set(range(1, 10))
 
         # Generar una lista de posiciones y mezclarla
         posiciones = list(range(81))
         shuffle(posiciones)
 
         # Seleccionar las primeras 23 posiciones para vaciar
-        celdas_vacias = set(posiciones[:23])
+        celdas_vacias = set(posiciones[:25])
 
         # Genera posiciones simétricas
         x = list(celdas_vacias)
         y = [80 - i for i in x]
         celdas_vacias = set(x + y)
 
-        # Filtra las posiciones para asegurarse de que todas estén dentro del rango válido (0 a 80), 
-        # eliminando cualquier posición fuera de estos límites
-        celdas_vacias = {pos for pos in celdas_vacias if pos < 81}
-
         # Reemplaza los valores en resultado
         resultado = [num if i not in celdas_vacias else -1 for i, num in enumerate(resultado)]
 
-        resultado_set = set(resultado) - {-1}
-        if digitos_requeridos.issubset(resultado_set):
+        self._grid_sin_resolver = [resultado[9*i:9*i+9] for i in range(9)]  
+        return self._grid_sin_resolver
 
-            self._grid_sin_resolver = [resultado[9*i:9*i+9] for i in range(9)]  
-            return self._grid_sin_resolver
-    
 
     @property
     def grid_solucion(self):
@@ -185,7 +177,6 @@ class SudokuValid():
         self.solutions = []
         solucion = sudoku.grid_solucion
         self.solveSudoku(grid, 0, 0)
-        print(len(self.solutions))
         if len(self.solutions) == 1:
             return valores, solucion
         else:
