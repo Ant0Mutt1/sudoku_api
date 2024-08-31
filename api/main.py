@@ -1,18 +1,29 @@
 from fastapi import FastAPI, Query, HTTPException
-from .sudoku_grid import SudokuValid
+from sudoku_grid import SudokuValid
+import uvicorn
 
 app = FastAPI()
 
 @app.get("/")
 def index():
-    sudoku= SudokuValid()
-    sudoku_grid = sudoku.sudoku()
-    grid_solucion = sudoku_grid[0]
-    grid_sudoku = sudoku_grid[1]
-    return {
-        "valores":grid_sudoku,
-        "solucion": grid_solucion
-    }
+    try:
+        sudoku = SudokuValid()  
+        sudoku_grid = sudoku.sudoku()  
+        
+        if not sudoku_grid or len(sudoku_grid) != 2:
+            raise ValueError("The output of the sudoku() method is not valid.")
+
+        grid_solucion = sudoku_grid[0]
+        grid_sudoku = sudoku_grid[1]
+        
+        return {
+            "value": grid_sudoku,
+            "solution": grid_solucion
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 data = {
     "es": {
@@ -38,7 +49,12 @@ data = {
 }
 @app.get('/rules')
 def info(lang :str = Query("es", alias="lang")):
-    print(f"Requested language: {lang}") 
-    if lang not in data:
-        raise HTTPException(status_code=404, detail="Language not supported")
-    return data[lang]        
+    try:
+        if lang not in data:
+            raise HTTPException(status_code=404, detail="Language not supported")
+        return data[lang]       
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+if __name__=='__main__':
+    uvicorn.run(app, host='localhost', port=8000)
