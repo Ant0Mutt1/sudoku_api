@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Query, HTTPException
-from sudoku_grid import SudokuValid
-import uvicorn
+from .sudoku_grid import SudokuValid
+
 
 app = FastAPI()
 
@@ -55,6 +55,3 @@ def info(lang :str = Query("es", alias="lang")):
         return data[lang]       
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
-
-if __name__=='__main__':
-    uvicorn.run(app, host='localhost', port=8000)

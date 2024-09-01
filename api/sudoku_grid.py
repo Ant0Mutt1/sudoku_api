@@ -176,14 +176,16 @@ class SudokuValid():
         grid = deepcopy(valores)
         self.solutions = []
         solucion = sudoku.grid_solucion
-        self.solveSudoku(grid, 0, 0)
+        self.resuelve_sudoku(grid, 0, 0)
+
+
         if len(self.solutions) == 1:
             return valores, solucion
         else:
             return self.sudoku()
 
 
-    def isSafe(self, grid, row, col, num):
+    def es_candidato(self, grid, row, col, num):
     
         for x in range(9):
             if grid[row][x] == num:
@@ -201,23 +203,26 @@ class SudokuValid():
                     return False
         return True
 
-    def solveSudoku(self,grid, row, col):
-    
+    def resuelve_sudoku(self,grid, row, col):
+        # Comprueba si la última celda (row=8, col=9) está completa para salir del método
         if row == self.N - 1 and col == self.N:
             self.solutions.append(deepcopy(grid))
             return
         
+        # Comprueba si la última celda de la columna está llena para pasar a la siguiente
         if col == self.N:
             row += 1
             col = 0
 
+        # Comprueba si la celda ya está ocupada, en caso de ser así avanza a la próxima celda
         if grid[row][col] > 0:
-            self.solveSudoku(grid, row, col + 1)
+            self.resuelve_sudoku(grid, row, col + 1)
+
         else:
             for num in range(1, self.N + 1):
-                if self.isSafe(grid, row, col, num):
+                if self.es_candidato(grid, row, col, num):
                     grid[row][col] = num
-                    self.solveSudoku(grid, row, col + 1)
+                    self.resuelve_sudoku(grid, row, col + 1)
                     grid[row][col] = 0
          
 if __name__ == '__main__':
