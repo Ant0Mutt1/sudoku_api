@@ -170,7 +170,7 @@ class SudokuValid():
     def __init__(self):
         self.soluciones = []
     def sudoku(self):
-        
+
         sudoku = SudokuGrid()
         valores = sudoku.grid_sin_resolver
         grid = deepcopy(valores)
@@ -184,48 +184,50 @@ class SudokuValid():
             return self.sudoku()
 
 
-    def _es_candidato(self, grid, row, col, num):
-    
+    def _es_candidato(self, grid, fila, col, num):
+
+    # Busca si el número candidato ya se encuentra presente 
+    # en su linea virtual (formada por la fila, columna, y región donde está presente)    
         for x in range(9):
-            if grid[row][x] == num:
+            if grid[fila][x] == num:
                 return False
 
         for x in range(9):
             if grid[x][col] == num:
                 return False
 
-        startRow = row - row % 3
-        startCol = col - col % 3
+        fila_inicial = fila - fila % 3
+        col_inicial = col - col % 3
         for i in range(3):
             for j in range(3):
-                if grid[i + startRow][j + startCol] == num:
+                if grid[i + fila_inicial][j + col_inicial] == num:
                     return False
         return True
 
-    def _resuelve_sudoku(self,grid, row, col):
+    def _resuelve_sudoku(self,grid, fila, col):
         # Comprueba que la grid tenga más de una solucion posible para descartarla
         if len(self.soluciones) > 1:
             return
-        # Comprueba si la última celda (row=8, col=9) está completa para salir del método
-        if row == self.N - 1 and col == self.N:
+        # Comprueba si la última celda (fila=8, col=9) está completa para salir del método
+        if fila == self.N - 1 and col == self.N:
             self.soluciones.append(deepcopy(grid))
             return
         
         # Comprueba si la última celda de la columna está llena para pasar a la siguiente
         if col == self.N:
-            row += 1
+            fila += 1
             col = 0
 
         # Comprueba si la celda ya está ocupada, en caso de ser así avanza a la próxima celda
-        if grid[row][col] > 0:
-            self._resuelve_sudoku(grid, row, col + 1)
+        if grid[fila][col] > 0:
+            self._resuelve_sudoku(grid, fila, col + 1)
 
         else:
             for num in range(1, self.N + 1):
-                if self._es_candidato(grid, row, col, num):
-                    grid[row][col] = num
-                    self._resuelve_sudoku(grid, row, col + 1)
-                    grid[row][col] = 0
+                if self._es_candidato(grid, fila, col, num):
+                    grid[fila][col] = num
+                    self._resuelve_sudoku(grid, fila, col + 1)
+                    grid[fila][col] = 0
          
 if __name__ == '__main__':
     sudoku = SudokuValid()
