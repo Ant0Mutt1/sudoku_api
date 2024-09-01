@@ -8,7 +8,6 @@ def duplicados_en_conjuntos(lst):
     vistos = set()
     duplicados = set()
     
-    # Convertir conjuntos a tuplas (ya que los conjuntos no son hashables y no se pueden añadir a otro conjunto)
     lst_tuplas = [tuple(sorted(conjunto)) for conjunto in lst]
     
     for tupla in lst_tuplas:
@@ -169,23 +168,23 @@ class SudokuValid():
 
     N = 9
     def __init__(self):
-        self.solutions = []
+        self.soluciones = []
     def sudoku(self):
+        
         sudoku = SudokuGrid()
         valores = sudoku.grid_sin_resolver
         grid = deepcopy(valores)
-        self.solutions = []
+        self.soluciones = []
         solucion = sudoku.grid_solucion
-        self.resuelve_sudoku(grid, 0, 0)
+        self._resuelve_sudoku(grid, 0, 0)
 
-
-        if len(self.solutions) == 1:
+        if len(self.soluciones) == 1:
             return valores, solucion
         else:
             return self.sudoku()
 
 
-    def es_candidato(self, grid, row, col, num):
+    def _es_candidato(self, grid, row, col, num):
     
         for x in range(9):
             if grid[row][x] == num:
@@ -203,10 +202,13 @@ class SudokuValid():
                     return False
         return True
 
-    def resuelve_sudoku(self,grid, row, col):
+    def _resuelve_sudoku(self,grid, row, col):
+        # Comprueba que la grid tenga más de una solucion posible para descartarla
+        if len(self.soluciones) > 1:
+            return
         # Comprueba si la última celda (row=8, col=9) está completa para salir del método
         if row == self.N - 1 and col == self.N:
-            self.solutions.append(deepcopy(grid))
+            self.soluciones.append(deepcopy(grid))
             return
         
         # Comprueba si la última celda de la columna está llena para pasar a la siguiente
@@ -216,13 +218,13 @@ class SudokuValid():
 
         # Comprueba si la celda ya está ocupada, en caso de ser así avanza a la próxima celda
         if grid[row][col] > 0:
-            self.resuelve_sudoku(grid, row, col + 1)
+            self._resuelve_sudoku(grid, row, col + 1)
 
         else:
             for num in range(1, self.N + 1):
-                if self.es_candidato(grid, row, col, num):
+                if self._es_candidato(grid, row, col, num):
                     grid[row][col] = num
-                    self.resuelve_sudoku(grid, row, col + 1)
+                    self._resuelve_sudoku(grid, row, col + 1)
                     grid[row][col] = 0
          
 if __name__ == '__main__':
