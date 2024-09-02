@@ -3,26 +3,6 @@ from random import randint, choice, shuffle
 from math import sqrt
 from copy import deepcopy
 
-
-def duplicados_en_conjuntos(lst):
-    vistos = set()
-    duplicados = set()
-    
-    lst_tuplas = [tuple(sorted(conjunto)) for conjunto in lst]
-    
-    for tupla in lst_tuplas:
-        if tupla in vistos:
-            duplicados.add(tupla)
-        else:
-            vistos.add(tupla)
-    
-    # Convertir las tuplas de vuelta a conjuntos
-    duplicados_conjuntos = [set(tupla) for tupla in duplicados]
-    
-    return duplicados_conjuntos if duplicados_conjuntos else False
-
-
-
 class GruposVertices:
     def __init__(self, n_bloques) -> None:
         self.num_bloques = n_bloques
